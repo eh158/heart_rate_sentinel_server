@@ -8,27 +8,44 @@ from server import *
 #                          ["patient_id", "heart_rate_average_since"]]
 
 
-# @pytest.mark.parametrize("HR, age, expected", [
-#     (200, 2, True),
-#     (120, 2, False),
-#     (110, 6000, True),
-#     (110, 5000, False),
-# ])
-# def test_is_tachycardic(HR, age, expected):
-#     assert is_tachycardic(HR, age) == expected
-
-
-@pytest.mark.parametrize("r, expected", [
-    ({"patient_id": 1, "attending_email": "hi@duke.edu", "user_age": 30}, True),
-    ({"attending_email": "hi@duke.edu", "user_age": 30}, False),
-    ({"patient_id": 1, "attending_email": "hi@duke.edu"}, False)
+@pytest.mark.parametrize("HR, age, expected", [
+    (200, 2, True),
+    (120, 2, False),
+    (110, 6000, True),
+    (110, 5000, False),
 ])
-def test_validate_new_patient_request(r, expected):
+def test_is_tachycardic(HR, age, expected):
+    assert is_tachycardic(HR, age) == expected
+
+
+@pytest.mark.parametrize("r, broke", [
+    ({"patient_id": 1, "attending_email": "hi@duke.edu", "user_age": 30}, False),
+    ({"attending_email": "hi@duke.edu", "user_age": 30}, True),
+    ({"patient_id": 1, "attending_email": "hi@duke.edu"}, True)
+])
+def test_validate_new_patient_request(r, broke):
     try:
         validate_new_patient_request(json.dumps(r))
     except ValidationError:
-        assert expected is False
+        assert broke is True
     except TypeError:
-        assert expected is False
+        assert broke is True
     else:
-        assert expected is True
+        assert broke is False
+
+
+@pytest.mark.parametrize("r, broke", [
+    ({"patient_id": 1, "heart_rate": 30}, False),
+    ({"patient_id": 1}, True),
+    ({"heart_rate": 30}, True),
+    ({"patient_id": 1, "heart_rate": 30, "attending_email": "hi@duke.edu"}, True),
+])
+def test_validate_new_patient_request(r, broke):
+    try:
+        validate_new_patient_request(json.dumps(r))
+    except ValidationError:
+        assert broke is True
+    except TypeError:
+        assert broke is True
+    else:
+        assert broke is False

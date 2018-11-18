@@ -132,23 +132,12 @@ def heart_rate():
 
 
 @app.route("/api/status/<patient_id>", methods=["GET"])
-def heart_rate(patient_id):
+def get_status(patient_id):
     HR_data = patientlib[patient_id]['heart_rate']
     HR_data_cut = [i[0] for i in HR_data]
     check = is_tachycardic(HR_data_cut, patientlib[patient_id]['user_age'])
     if (check):
-        send_tachy_email(attending_email)
-
-
-@app.route("/api/status/<patient_id>", methods=["GET"])
-def get_status(patient_id):
-    HR_data = patientlib[patient_id]['heart_rate']
-    HR_data_cut = [i[0] for i in HR_data]
-    check = is_tachycardic(HR_data_cut)
-    if (check):
-        return jsonify('Tachycardic')
-    else:
-        return jsonify('Not Tachycardic')
+        send_tachy_email(patientlib[patient_id]['attending_email'])
 
 
 @app.route("/api/heart_rate/<patient_id>", methods=["GET"])
