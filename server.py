@@ -87,19 +87,19 @@ class ValidationError(Exception):
 def validate_new_patient_request(req):
     for key in REQUEST_REQUIRED_KEYS[0]:
         if key not in req.keys():
-            raise ValidationError("Key '{0}' not present in request".format(key))
+            raise ValidationError("Key '{0}' not found".format(key))
 
 
 def validate_heart_rate_request(req):
     for key in REQUEST_REQUIRED_KEYS[1]:
         if key not in req.keys():
-            raise ValidationError("Key '{0}' not present in request".format(key))
+            raise ValidationError("Key '{0}' not found".format(key))
 
 
 def validate_internal_average_request(req):
     for key in REQUEST_REQUIRED_KEYS[2]:
         if key not in req.keys():
-            raise ValidationError("Key '{0}' not present in request".format(key))
+            raise ValidationError("Key '{0}' not found".format(key))
 
 
 @app.route("/api/new_patient/", methods=["POST"])
@@ -176,4 +176,5 @@ def internal_average():
 
 
 if __name__ == "__main__":
+    print(is_tachycardic(101, 5000))
     app.run(host="127.0.0.1")

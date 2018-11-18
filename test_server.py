@@ -16,7 +16,8 @@ from server import *
     (101, 5000, False),
 ])
 def test_is_tachycardic(HR, age, expected):
-    assert is_tachycardic(HR, age) == expected
+    age_years = float(age)/float(365)
+    assert is_tachycardic(HR, age_years) == expected
 
 
 @pytest.mark.parametrize("r, broke", [
