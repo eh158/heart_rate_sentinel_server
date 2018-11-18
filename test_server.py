@@ -8,14 +8,14 @@ from server import *
 #                          ["patient_id", "heart_rate_average_since"]]
 
 
-@pytest.mark.parametrize("HR, age, expected", [
-    (200, 2, True),
-    (120, 2, False),
-    (110, 6000, True),
-    (110, 5000, False),
-])
-def test_is_tachycardic(HR, age, expected):
-    assert is_tachycardic(HR, age) == expected
+# @pytest.mark.parametrize("HR, age, expected", [
+#     (200, 2, True),
+#     (120, 2, False),
+#     (110, 6000, True),
+#     (110, 5000, False),
+# ])
+# def test_is_tachycardic(HR, age, expected):
+#     assert is_tachycardic(HR, age) == expected
 
 
 @pytest.mark.parametrize("r, expected", [
