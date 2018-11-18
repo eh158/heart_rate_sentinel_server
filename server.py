@@ -5,6 +5,10 @@ app = Flask(__name__)
 
 patientlib = {}
 
+REQUEST_REQUIRED_KEYS = [["patient_id", "attending_email", "user_age"],
+                         ["patient_id", "heart_rate"],
+                         ["patient_id", "heart_rate_average_since"]]
+
 
 def send_tachy_email(email):
     print(email)
@@ -70,9 +74,36 @@ def is_tachycardic(heart_rate, age):
             return False
 
 
+class ValidationError(Exception):
+    def __init__(self, message):
+        self.message = message
+
+
+def validate_new_patient_request(req):
+    for key in REQUEST_REQUIRED_KEYS[0]:
+        if key not in req.keys():
+            raise ValidationError("Key '{0}' not present in request".format(key))
+
+
+def validate_heart_rate_request(req):
+    for key in REQUEST_REQUIRED_KEYS[1]:
+        if key not in req.keys():
+            raise ValidationError("Key '{0}' not present in request".format(key))
+
+
+def validate_internal_average_request(req):
+    for key in REQUEST_REQUIRED_KEYS[2]:
+        if key not in req.keys():
+            raise ValidationError("Key '{0}' not present in request".format(key))
+
+
 @app.route("/api/new_patient/", methods=["POST"])
 def new_patient():
     r = request.get_json()
+    try:
+        validate_new_patient_request(r)
+    except ValidationError as inst:
+        return jsonify({"message": inst.message}), 500
     if r['patient_id'] in patientlib.keys():
         return jsonify('Already initialized')
     else:
@@ -87,6 +118,10 @@ def new_patient():
 @app.route("/api/heart_rate/", methods=["POST"])
 def heart_rate():
     r = request.get_json()
+    try:
+        validate_heart_rate_request(r)
+    except ValidationError as inst:
+        return jsonify({"message": inst.message}), 500
     if r['patient_id'] in patientlib.keys():
         patient = r['patient_id']
         hrdata = [r['heart_rate'], datetime.datetime.now()]
@@ -134,6 +169,10 @@ def get_heart_rate_avg(patient_id):
 @app.route("/api/heart_rate/internal_average/", methods=["POST"])
 def internal_average():
     r = request.get_json()
+    try:
+        validate_internal_average_request(r)
+    except ValidationError as inst:
+        return jsonify({"message": inst.message}), 500
     patient = r['patient_id']
     target_time = r['heart_rate_average_since']
     HR_data = patientlib[patient]['heart_rate']
