@@ -135,7 +135,7 @@ def heart_rate():
 def heart_rate(patient_id):
     HR_data = patientlib[patient_id]['heart_rate']
     HR_data_cut = [i[0] for i in HR_data]
-    check = is_tachycardic(HR_data_cut)
+    check = is_tachycardic(HR_data_cut, patientlib[patient_id]['user_age'])
     if (check):
         send_tachy_email(attending_email)
 
