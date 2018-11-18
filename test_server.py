@@ -13,7 +13,7 @@ from server import *
     (200, 2, True),
     (120, 2, False),
     (110, 6000, True),
-    (110, 5000, False),
+    (101, 5000, False),
 ])
 def test_is_tachycardic(HR, age, expected):
     assert is_tachycardic(HR, age) == expected
