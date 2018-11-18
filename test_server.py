@@ -14,8 +14,7 @@ from server import *
     (120, 2, False, False),
     (110, 6000, True, False),
     (101, 5000, False, False),
-    ("abc", 5000, False, True),
-    (100, "abc", False, True),
+    ("abc", 5000, False, True)
 ])
 def test_is_tachycardic(HR, age, expected, broke):
     age_years = float(age)/float(365)

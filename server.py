@@ -1,9 +1,12 @@
 import datetime
+import sendgrid
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
 patientlib = {}
+
+sendgridkey = "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"
 
 REQUEST_REQUIRED_KEYS = [["patient_id", "attending_email", "user_age"],
                          ["patient_id", "heart_rate"],
