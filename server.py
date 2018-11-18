@@ -17,32 +17,32 @@ def send_tachy_email(email):
 def is_tachycardic(heart_rate, age):
     tachy = [159, 166, 182, 179, 186, 169, 151, 137, 133, 130, 119, 100]
     new_age = age * 365
-    if new_age <= 2: #two days
+    if new_age <= 2:  # two days
         if heart_rate >= tachy[0]:
             return True
         else:
             return False
-    elif new_age <= 6: #six days
+    elif new_age <= 6:  # six days
         if heart_rate >= tachy[1]:
             return True
         else:
             return False
-    elif new_age <= 21: #3 weeks
+    elif new_age <= 21:  # 3 weeks
         if heart_rate >= tachy[2]:
             return True
         else:
             return False
-    elif new_age <= 62: #2 months
+    elif new_age <= 62:  # 2 months
         if heart_rate >= tachy[3]:
             return True
         else:
             return False
-    elif new_age <= 153: #5 months
+    elif new_age <= 153:  # 5 months
         if heart_rate >= tachy[4]:
             return True
         else:
             return False
-    elif new_age <= 324: #11 months
+    elif new_age <= 324:  # 11 months
         if heart_rate >= tachy[5]:
             return True
         else:

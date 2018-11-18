@@ -39,7 +39,7 @@ def test_validate_new_patient_request(r, broke):
     ({"patient_id": 1, "heart_rate": 30}, False),
     ({"patient_id": 1}, True),
     ({"heart_rate": 30}, True),
-    ({"patient_id": 1, "heart_rate": 30, "attending_email": "hi@duke.edu"}, True),
+    ({"patient_id": 1, "heart_rate": 30, "attending_email": "hi@duke.edu"}, False),
 ])
 def test_validate_heart_rate_request(r, broke):
     try:
@@ -55,7 +55,7 @@ def test_validate_heart_rate_request(r, broke):
 @pytest.mark.parametrize("r, broke", [
     ({"patient_id": "1", "heart_rate_average_since": "2018-03-09 11:00:36.372339"}, False),
     ({"patient_id": "1"}, True),
-    ({"heart_rate_average_since": "2018-03-09 11:00:36.372339"}, False),
+    ({"heart_rate_average_since": "2018-03-09 11:00:36.372339"}, True),
     ({"patient_id": "1", "heart_rate_average_since": "2018-03-09 11:00:36.3", "hi": 0}, False)
 ])
 def test_validate_internal_average_request(r, broke):
