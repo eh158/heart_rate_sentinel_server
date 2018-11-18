@@ -1,7 +1,9 @@
 from flask import Flask, jsonify, request
+
 app = Flask(__name__)
 
 patientlib = {}
+
 
 @app.route("/api/new_patient/", methods=["POST"])
 def new_patient():
@@ -10,9 +12,9 @@ def new_patient():
         return jsonify('Already initialized')
     else:
         patient = r['patient_id']
-        patientlib[patient]={}
-        patientlib[patient]['attending_email']=r['attending_email']
-        patientlib[patient]['user_age']=r['user_age']
+        patientlib[patient] = {}
+        patientlib[patient]['attending_email'] = r['attending_email']
+        patientlib[patient]['user_age'] = r['user_age']
         return jsonify('Initialized patient')
 
 

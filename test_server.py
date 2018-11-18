@@ -9,7 +9,6 @@ from server import *
      ["Initialized patient", "Already initialized"])
 ])
 def test_new_patient(patients, responses):
-    app.run(host="127.0.0.1")
     results = []
     for i in patients:
         r = requests.post("http://127.0.0.1:5000/api/new_patient/",
