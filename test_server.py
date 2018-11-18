@@ -26,7 +26,7 @@ def test_is_tachycardic(HR, age, expected):
 ])
 def test_validate_new_patient_request(r, broke):
     try:
-        validate_new_patient_request(json.dumps(r))
+        validate_new_patient_request(r)
     except ValidationError:
         assert broke is True
     except TypeError:
@@ -43,7 +43,7 @@ def test_validate_new_patient_request(r, broke):
 ])
 def test_validate_heart_rate_request(r, broke):
     try:
-        validate_heart_rate_request(json.dumps(r))
+        validate_heart_rate_request(r)
     except ValidationError:
         assert broke is True
     except TypeError:
@@ -60,7 +60,7 @@ def test_validate_heart_rate_request(r, broke):
 ])
 def test_validate_internal_average_request(r, broke):
     try:
-        validate_internal_average_request(json.dumps(r))
+        validate_internal_average_request(r)
     except ValidationError:
         assert broke is True
     except TypeError:
