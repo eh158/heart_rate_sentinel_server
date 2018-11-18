@@ -18,7 +18,7 @@ def is_tachycardic(heart_rate, age):
     tachy = [159, 166, 182, 179, 186, 169, 151, 137, 133, 130, 119, 100]
     if not isinstance(age, int) or not isinstance(age, float):
         raise TypeError('Float or int expected')
-    if not isinstance(heart_rate, int) or not isinstance(heart_rate, float):
+    elif not isinstance(heart_rate, int) or not isinstance(heart_rate, float):
         raise TypeError('Float or int expected')
     new_age = age * 365
     if new_age <= 2:  # two days
