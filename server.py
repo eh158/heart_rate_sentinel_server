@@ -169,7 +169,9 @@ def get_status(patient_id):
     HR_data_cut = [i[0] for i in HR_data]
     check = is_tachycardic(HR_data_cut, patientlib[patient_id]['user_age'])
     if (check):
-        send_tachy_email(patient_id, patientlib[patient_id]['attending_email'], USER_EMAIL)
+        send_tachy_email(patient_id,
+                         patientlib[patient_id]['attending_email'],
+                         USER_EMAIL)
 
 
 @app.route("/api/heart_rate/<patient_id>", methods=["GET"])
