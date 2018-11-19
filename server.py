@@ -1,20 +1,46 @@
 import datetime
 import sendgrid
+import os
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
 patientlib = {}
 
-sendgridkey = "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"
-
 REQUEST_REQUIRED_KEYS = [["patient_id", "attending_email", "user_age"],
                          ["patient_id", "heart_rate"],
                          ["patient_id", "heart_rate_average_since"]]
 
+USER_EMAIL = "eh158@duke.edu"
+
 
 def send_tachy_email(email):
-    print(email)
+    sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+    data = {
+        "personalizations": [
+            {
+                "to": [
+                    {
+                        "email": email
+                    }
+                ],
+                "subject": "Sending with SendGrid is Fun"
+            }
+        ],
+        "from": {
+            "email": USER_EMAIL
+        },
+        "content": [
+            {
+                "type": "text/plain",
+                "value": "and easy to do anywhere, even with Python"
+            }
+        ]
+    }
+    response = sg.client.mail.send.post(request_body=data)
+    print(response.status_code)
+    print(response.body)
+    print(response.headers)
 
 
 def is_tachycardic(heart_rate, age):
