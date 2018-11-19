@@ -1,6 +1,7 @@
 import datetime
 import sendgrid
 import os
+from sendgrid.helpers.mail import *
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
@@ -14,30 +15,21 @@ REQUEST_REQUIRED_KEYS = [["patient_id", "attending_email", "user_age"],
 USER_EMAIL = "eh158@duke.edu"
 
 
-def send_tachy_email(patient,email):
+def send_tachy_email(patient, attending_email, sender_email):
+    if not isinstance(patient, str):
+        raise TypeError("Str expected")
+    for i in [attending_email, sender_email]:
+        if not isinstance(i, str):
+            raise TypeError("Str expected")
+        if "@" not in i:
+            raise ValidationError("Invalid email")
     sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
-    data = {
-        "personalizations": [
-            {
-                "to": [
-                    {
-                        "email": email
-                    }
-                ],
-                "subject": "Tachycardic heart rate"
-            }
-        ],
-        "from": {
-            "email": USER_EMAIL
-        },
-        "content": [
-            {
-                "type": "text/plain",
-                "value": "Patient "+patient+" has a tachycardic heart rate."
-            }
-        ]
-    }
-    response = sg.client.mail.send.post(request_body=data)
+    from_email = Email(sender_email)
+    to_email = Email(attending_email)
+    subject = "Tachycardic"
+    content = Content("text/plain", "Patient " + patient + " is tachycardic")
+    mail = Mail(from_email, subject, to_email, content)
+    response = sg.client.mail.send.post(request_body=mail.get())
     print(response.status_code)
     print(response.body)
     print(response.headers)
@@ -177,7 +169,7 @@ def get_status(patient_id):
     HR_data_cut = [i[0] for i in HR_data]
     check = is_tachycardic(HR_data_cut, patientlib[patient_id]['user_age'])
     if (check):
-        send_tachy_email(patientlib[patient_id]['attending_email'])
+        send_tachy_email(patient_id, patientlib[patient_id]['attending_email'], USER_EMAIL)
 
 
 @app.route("/api/heart_rate/<patient_id>", methods=["GET"])
