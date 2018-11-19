@@ -14,7 +14,7 @@ REQUEST_REQUIRED_KEYS = [["patient_id", "attending_email", "user_age"],
 USER_EMAIL = "eh158@duke.edu"
 
 
-def send_tachy_email(email):
+def send_tachy_email(patient,email):
     sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
     data = {
         "personalizations": [
@@ -24,7 +24,7 @@ def send_tachy_email(email):
                         "email": email
                     }
                 ],
-                "subject": "Sending with SendGrid is Fun"
+                "subject": "Tachycardic heart rate"
             }
         ],
         "from": {
@@ -33,7 +33,7 @@ def send_tachy_email(email):
         "content": [
             {
                 "type": "text/plain",
-                "value": "and easy to do anywhere, even with Python"
+                "value": "Patient "+patient+" has a tachycardic heart rate."
             }
         ]
     }
