@@ -16,6 +16,23 @@ USER_EMAIL = "eh158@duke.edu"
 
 
 def send_tachy_email(patient, attending_email, sender_email):
+    """
+    Parameters
+    ----------
+    patient: string
+        string ID of patient
+    attending_email: string
+        string of recipient email
+    sender_email: string
+        string of sender email
+    Returns
+    -------
+        0 on success
+    Raises
+    ------
+        TypeError
+            If any of the parameters are not strings
+    """
     if not isinstance(patient, str):
         raise TypeError("Str expected")
     for i in [attending_email, sender_email]:
@@ -33,9 +50,26 @@ def send_tachy_email(patient, attending_email, sender_email):
     print(response.status_code)
     print(response.body)
     print(response.headers)
+    return 0
 
 
 def is_tachycardic(heart_rate, age):
+    """
+    Parameters
+    ----------
+    heart_rate: int or float
+        heart rate value
+    age: int or float
+        age of patient in years
+    Returns
+    -------
+        True if given heart rate is tachycardic for given age
+        False if given heart rate normal for given age
+    Raises
+    ------
+        TypeError
+            If inputs are not floats or ints
+    """
     tachy = [159, 166, 182, 179, 186, 169, 151, 137, 133, 130, 119, 100]
     if not isinstance(age, int):
         if not isinstance(age, float):
@@ -112,25 +146,84 @@ class ValidationError(Exception):
 
 
 def validate_new_patient_request(req):
+    """
+    Parameters
+    ----------
+    req: dictionary
+        dictionary of requests that are being validated
+    REQUEST_REQUIRED_KEYS: list of lists
+        stores keys that are being checked
+    Returns
+    -------
+        0 if validation succeeded
+    Raises
+    ------
+        ValidationError
+            If keys required for process are not returned
+    """
     for key in REQUEST_REQUIRED_KEYS[0]:
         if key not in req.keys():
             raise ValidationError("Key '{0}' not found".format(key))
+    return 0
 
 
 def validate_heart_rate_request(req):
+    """
+    Parameters
+    ----------
+    req: dictionary
+        dictionary of requests that are being validated
+    REQUEST_REQUIRED_KEYS: list of lists
+        stores keys that are being checked
+    Returns
+    -------
+        0 if validation succeeded
+    Raises
+    ------
+        ValidationError
+            If keys required for process are not returned
+    """
     for key in REQUEST_REQUIRED_KEYS[1]:
         if key not in req.keys():
             raise ValidationError("Key '{0}' not found".format(key))
+    return 0
 
 
 def validate_internal_average_request(req):
+    """
+    Parameters
+    ----------
+    req: dictionary
+        dictionary of requests that are being validated
+    REQUEST_REQUIRED_KEYS: list of lists
+        stores keys that are being checked
+    Returns
+    -------
+        0 if validation succeeded
+    Raises
+    ------
+        ValidationError
+            If keys required for process are not returned
+    """
     for key in REQUEST_REQUIRED_KEYS[2]:
         if key not in req.keys():
             raise ValidationError("Key '{0}' not found".format(key))
+    return 0
 
 
 @app.route("/api/new_patient/", methods=["POST"])
 def new_patient():
+    """
+    Parameters
+    ----------
+    dictionary from post request containing:
+        "patient_id"
+        "attending_email"
+        "user_age"
+    Returns
+    -------
+        "Initialized patient" if succeeded
+    """
     r = request.get_json()
     try:
         validate_new_patient_request(r)
@@ -149,6 +242,17 @@ def new_patient():
 
 @app.route("/api/heart_rate/", methods=["POST"])
 def heart_rate():
+    """
+    Parameters
+    ----------
+    dictionary from post request containing:
+        "patient_id"
+        "heart_rate"
+    Returns
+    -------
+        "Patient not initialized" if failed
+        "Added HR" if succeeded; sends email if tachycardic
+    """
     r = request.get_json()
     try:
         validate_heart_rate_request(r)
@@ -158,6 +262,11 @@ def heart_rate():
         patient = r['patient_id']
         hrdata = [r['heart_rate'], datetime.datetime.now()]
         patientlib[patient]['heart_rate'].append(hrdata)
+        check = is_tachycardic(r['heart_rate'], patientlib[patient]['user_age'])
+        if (check):
+            send_tachy_email(patient,
+                             patientlib[patient]['attending_email'],
+                             USER_EMAIL)
         return jsonify('Added HR')
     else:
         return jsonify('Patient not Initialized')
@@ -165,17 +274,38 @@ def heart_rate():
 
 @app.route("/api/status/<patient_id>", methods=["GET"])
 def get_status(patient_id):
+    """
+    Parameters
+    ----------
+    patient_id: string
+        patient identification string
+    Returns
+    -------
+        "Patient tachycardic" if tachycardic according to last measurement
+        with date included.
+        "Patient not tachycardic" if last measurement normal
+    """
     HR_data = patientlib[patient_id]['heart_rate']
     HR_data_cut = [i[0] for i in HR_data]
-    check = is_tachycardic(HR_data_cut, patientlib[patient_id]['user_age'])
+    check = is_tachycardic(HR_data_cut[len(HR_data_cut)-1], patientlib[patient_id]['user_age'])
     if (check):
-        send_tachy_email(patient_id,
-                         patientlib[patient_id]['attending_email'],
-                         USER_EMAIL)
+        date = HR_data[len(HR_data)-1][1]
+        return jsonify("Patient tachycardic measured '{0}'".format(date))
+    else:
+        return jsonify("Patient not tachycardic")
 
 
 @app.route("/api/heart_rate/<patient_id>", methods=["GET"])
 def get_heart_rate(patient_id):
+    """
+    Parameters
+    ----------
+    patient_id: string
+        patient identification string
+    Returns
+    -------
+        HR data measurements
+    """
     HR_data = patientlib[patient_id]['heart_rate']
     HR_data_cut = [i[0] for i in HR_data]
     return jsonify(HR_data_cut)
@@ -183,6 +313,15 @@ def get_heart_rate(patient_id):
 
 @app.route("/api/heart_rate/average/<patient_id>", methods=["GET"])
 def get_heart_rate_avg(patient_id):
+    """
+    Parameters
+    ----------
+    patient_id: string
+        patient identification string
+    Returns
+    -------
+        average heart rate over all measurements
+    """
     HR_data = patientlib[patient_id]['heart_rate']
     HR_data_cut = [i[0] for i in HR_data]
     avg_HR = sum(HR_data_cut) / len(HR_data_cut)
@@ -191,6 +330,16 @@ def get_heart_rate_avg(patient_id):
 
 @app.route("/api/heart_rate/internal_average/", methods=["POST"])
 def internal_average():
+    """
+    Parameters
+    ----------
+    dictionary from post request containing:
+        "patient_id"
+        "heart_rate_average_since"
+    Returns
+    -------
+        average heart rate over measurements after specified date
+    """
     r = request.get_json()
     try:
         validate_internal_average_request(r)
