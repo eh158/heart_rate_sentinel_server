@@ -262,7 +262,8 @@ def heart_rate():
         patient = r['patient_id']
         hrdata = [r['heart_rate'], datetime.datetime.now()]
         patientlib[patient]['heart_rate'].append(hrdata)
-        check = is_tachycardic(r['heart_rate'], patientlib[patient]['user_age'])
+        age = patientlib[patient]['user_age']
+        check = is_tachycardic(r['heart_rate'], age)
         if (check):
             send_tachy_email(patient,
                              patientlib[patient]['attending_email'],
@@ -287,7 +288,8 @@ def get_status(patient_id):
     """
     HR_data = patientlib[patient_id]['heart_rate']
     HR_data_cut = [i[0] for i in HR_data]
-    check = is_tachycardic(HR_data_cut[len(HR_data_cut)-1], patientlib[patient_id]['user_age'])
+    age = patientlib[patient_id]['user_age']
+    check = is_tachycardic(HR_data_cut[len(HR_data_cut)-1], age)
     if (check):
         date = HR_data[len(HR_data)-1][1]
         return jsonify("Patient tachycardic measured '{0}'".format(date))
